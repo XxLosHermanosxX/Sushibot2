@@ -170,6 +170,22 @@ function App() {
     }
   }, []);
 
+  // Buscar status do bot WhatsApp diretamente
+  const fetchWhatsAppBotStatus = useCallback(async () => {
+    if (!WHATSAPP_BOT_URL) return;
+    
+    try {
+      const response = await fetch(`${WHATSAPP_BOT_URL}/qr-data`);
+      if (response.ok) {
+        const data = await response.json();
+        setWhatsappBotStatus(data);
+      }
+    } catch (err) {
+      // Bot pode não estar acessível em produção
+      console.log('Bot WhatsApp não acessível diretamente');
+    }
+  }, []);
+
   // Buscar config
   const fetchConfig = useCallback(async () => {
     try {
