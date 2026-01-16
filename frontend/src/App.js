@@ -239,14 +239,16 @@ function App() {
     fetchStatus();
     fetchConfig();
     fetchConversas();
+    fetchWhatsAppBotStatus();
     
     const interval = setInterval(() => {
       fetchStatus();
       fetchConversas();
+      fetchWhatsAppBotStatus();
     }, 2000);
     
     return () => clearInterval(interval);
-  }, [fetchStatus, fetchConfig, fetchConversas]);
+  }, [fetchStatus, fetchConfig, fetchConversas, fetchWhatsAppBotStatus]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
