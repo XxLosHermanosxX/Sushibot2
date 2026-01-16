@@ -34,7 +34,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 
-// Determinar URL do backend
+// Determinar URLs
 const getBackendUrl = () => {
   if (typeof window !== 'undefined') {
     if (window.location.hostname === 'localhost') {
@@ -42,13 +42,21 @@ const getBackendUrl = () => {
     }
     const envUrl = process.env.REACT_APP_BACKEND_URL;
     if (envUrl) return envUrl;
-    // Para Vercel/produção, usar mesma origem com /api
     return window.location.origin;
   }
   return '';
 };
 
+const getWhatsAppBotUrl = () => {
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+    return 'http://localhost:3001';
+  }
+  // Em produção, o bot WhatsApp deve estar no mesmo servidor ou configurado
+  return process.env.REACT_APP_WHATSAPP_BOT_URL || '';
+};
+
 const BACKEND_URL = getBackendUrl();
+const WHATSAPP_BOT_URL = getWhatsAppBotUrl();
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
