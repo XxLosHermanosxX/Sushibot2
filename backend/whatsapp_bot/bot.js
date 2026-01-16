@@ -18,7 +18,10 @@ const PORT = process.env.PORT || 3001;
 // Estado global
 let sock = null;
 let currentQR = null;
+let currentQRDataUrl = null;
 let connectionStatus = 'Aguardando conexão...';
+let isConnected = false;
+let phoneNumber = null;
 const mensagensProcessadas = new Set();
 
 // Funções auxiliares
@@ -28,13 +31,32 @@ function delay(ms) {
 
 async function notifyBackend(endpoint, data) {
     try {
-        const response = await axios.post(`${BACKEND_URL}/api/webhook/${endpoint}`, data);
+        const response = await axios.post(`${BACKEND_URL}/api/webhook/${endpoint}`, data, {
+            timeout: 5000
+        });
         return response.data;
     } catch (error) {
-        console.error(`Erro ao notificar backend: ${error.message}`);
+        // Silenciar erros de conexão recusada (backend pode estar reiniciando)
+        if (error.code !== 'ECONNREFUSED') {
+            console.error(`Erro ao notificar backend: ${error.message}`);
+        }
         return null;
     }
 }
+
+// Sincronizar status com backend periodicamente
+async function syncStatusWithBackend() {
+    const statusData = {
+        connected: isConnected,
+        qr_code: currentQRDataUrl,
+        status_text: connectionStatus,
+        phone_number: phoneNumber
+    };
+    await notifyBackend('status', statusData);
+}
+
+// Iniciar sincronização periódica
+setInterval(syncStatusWithBackend, 5000);
 
 // Processamento de mensagens
 async function processarMensagem(msg) {
@@ -107,8 +129,19 @@ async function processarMensagem(msg) {
     }
 }
 
-// Servidor web para QR Code
+// Servidor web para QR Code com CORS
 const server = http.createServer(async (req, res) => {
+    // Headers CORS
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    
+    if (req.method === 'OPTIONS') {
+        res.writeHead(200);
+        res.end();
+        return;
+    }
+    
     if (req.url === '/' || req.url === '/qr-page') {
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
         res.end(`
@@ -145,7 +178,7 @@ const server = http.createServer(async (req, res) => {
             margin: 20px 0;
             padding: 10px 20px;
             border-radius: 10px;
-            background: ${connectionStatus === 'Conectado!' ? '#27ae60' : connectionStatus.includes('Escaneie') ? '#f39c12' : '#3498db'};
+            background: ${isConnected ? '#27ae60' : currentQR ? '#f39c12' : '#3498db'};
         }
         .qr-container {
             background: white;
@@ -158,7 +191,6 @@ const server = http.createServer(async (req, res) => {
         .instructions { margin-top: 20px; font-size: 0.9em; color: #bbb; }
         .instructions ol { text-align: left; display: inline-block; }
         .instructions li { margin: 5px 0; }
-        .refresh { margin-top: 15px; font-size: 0.8em; color: #888; }
         .connected { font-size: 4em; color: #27ae60; }
     </style>
 </head>
@@ -167,10 +199,11 @@ const server = http.createServer(async (req, res) => {
         <h1>🍣 Sushi Aki Bot</h1>
         <div class="status">${connectionStatus}</div>
         
-        ${connectionStatus === 'Conectado!' ? `
+        ${isConnected ? `
             <div class="connected">✓</div>
-            <p style="margin-top: 20px; font-size: 1.2em;">WhatsApp conectado com sucesso!</p>
-            <p style="margin-top: 10px; color: #27ae60;">O bot está ativo e respondendo mensagens.</p>
+            <p style="margin-top: 20px; font-size: 1.2em;">WhatsApp conectado!</p>
+            <p style="margin-top: 10px; color: #27ae60;">Bot ativo e respondendo.</p>
+            ${phoneNumber ? `<p style="margin-top: 10px; color: #888;">Número: ${phoneNumber}</p>` : ''}
         ` : currentQR ? `
             <div class="qr-container">
                 <img src="/qr" alt="QR Code">
@@ -188,8 +221,6 @@ const server = http.createServer(async (req, res) => {
             <p>Aguardando geração do QR Code...</p>
             <p style="margin-top: 10px; font-size: 0.9em; color: #888;">Isso pode levar alguns segundos.</p>
         `}
-        
-        <div class="refresh">Página atualiza automaticamente a cada 3 segundos</div>
     </div>
 </body>
 </html>
@@ -199,8 +230,9 @@ const server = http.createServer(async (req, res) => {
             try {
                 const qrImage = await QRCode.toBuffer(currentQR, {
                     type: 'png',
-                    width: 280,
-                    margin: 2
+                    width: 300,
+                    margin: 2,
+                    errorCorrectionLevel: 'M'
                 });
                 res.writeHead(200, { 'Content-Type': 'image/png' });
                 res.end(qrImage);
@@ -214,18 +246,19 @@ const server = http.createServer(async (req, res) => {
         }
     } else if (req.url === '/qr-data') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        if (currentQR) {
-            const qrDataUrl = await QRCode.toDataURL(currentQR, { width: 280, margin: 2 });
-            res.end(JSON.stringify({ qr: qrDataUrl, status: connectionStatus }));
-        } else {
-            res.end(JSON.stringify({ qr: null, status: connectionStatus }));
-        }
+        res.end(JSON.stringify({ 
+            qr: currentQRDataUrl, 
+            status: connectionStatus,
+            connected: isConnected,
+            phone_number: phoneNumber
+        }));
     } else if (req.url === '/status') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ 
             status: connectionStatus, 
             hasQR: !!currentQR,
-            connected: connectionStatus === 'Conectado!'
+            connected: isConnected,
+            phone_number: phoneNumber
         }));
     } else {
         res.writeHead(404);
@@ -270,36 +303,44 @@ async function conectarWhatsApp() {
         
         if (qr) {
             currentQR = qr;
+            isConnected = false;
             connectionStatus = 'Escaneie o QR Code';
+            
+            // Gerar data URL do QR
+            try {
+                currentQRDataUrl = await QRCode.toDataURL(qr, { 
+                    width: 300, 
+                    margin: 2,
+                    errorCorrectionLevel: 'M'
+                });
+            } catch (e) {
+                console.error('Erro ao gerar QR data URL:', e);
+            }
+            
             console.log('\n\x1b[33m════════════════════════════════════════════════════════\x1b[0m');
             console.log('\x1b[33m   📱 NOVO QR CODE GERADO!\x1b[0m');
             console.log(`\x1b[33m   Acesse http://localhost:${PORT} para escanear\x1b[0m`);
             console.log('\x1b[33m════════════════════════════════════════════════════════\x1b[0m\n');
             
             // Notificar backend
-            const qrDataUrl = await QRCode.toDataURL(qr, { width: 280, margin: 2 });
-            await notifyBackend('status', {
-                connected: false,
-                qr_code: qrDataUrl,
-                status_text: 'Escaneie o QR Code'
-            });
+            await syncStatusWithBackend();
         }
         
         if (connection === 'open') {
             currentQR = null;
+            currentQRDataUrl = null;
+            isConnected = true;
             connectionStatus = 'Conectado!';
+            phoneNumber = sock.user?.id?.split(':')[0] || null;
+            
             console.log('\n\x1b[32m════════════════════════════════════════════════════════\x1b[0m');
             console.log('\x1b[32m   ✓ WHATSAPP CONECTADO COM SUCESSO!\x1b[0m');
+            if (phoneNumber) console.log(`\x1b[32m   📞 Número: ${phoneNumber}\x1b[0m`);
             console.log('\x1b[32m════════════════════════════════════════════════════════\x1b[0m');
             console.log('\n\x1b[32m🤖 BOT ATIVO - Monitorando conversas...\x1b[0m\n');
             
             // Notificar backend
-            await notifyBackend('status', {
-                connected: true,
-                qr_code: null,
-                status_text: 'Conectado!',
-                phone_number: sock.user?.id?.split(':')[0] || null
-            });
+            await syncStatusWithBackend();
         }
         
         if (connection === 'close') {
@@ -307,6 +348,9 @@ async function conectarWhatsApp() {
             console.log(`\x1b[31mConexão fechada. Código: ${statusCode}\x1b[0m`);
             
             currentQR = null;
+            currentQRDataUrl = null;
+            isConnected = false;
+            phoneNumber = null;
             
             // Notificar backend
             await notifyBackend('status', {
