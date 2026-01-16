@@ -31,7 +31,10 @@ import {
   AlertCircle,
   CheckCircle,
   Trash2,
-  ExternalLink
+  ExternalLink,
+  Cpu,
+  Zap,
+  Star
 } from 'lucide-react';
 
 // Determinar URLs
@@ -51,7 +54,6 @@ const getWhatsAppBotUrl = () => {
   if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
     return 'http://localhost:3001';
   }
-  // Em produção, o bot WhatsApp deve estar no mesmo servidor ou configurado
   return process.env.REACT_APP_WHATSAPP_BOT_URL || '';
 };
 
