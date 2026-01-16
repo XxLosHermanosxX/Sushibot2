@@ -6,38 +6,53 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  /* Prevenir zoom em inputs no iOS */
+  touch-action: manipulation;
 }
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background: #111827;
   min-height: 100vh;
+  min-height: -webkit-fill-available;
   color: #ffffff;
+  overscroll-behavior: none;
 }
 
+/* Safe area para notch do iPhone */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Scrollbar personalizada */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 107, 107, 0.5);
-  border-radius: 4px;
+  background: rgba(255, 107, 107, 0.4);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 107, 107, 0.7);
+  background: rgba(255, 107, 107, 0.6);
 }
 
-.message-enter {
-  animation: slideIn 0.3s ease-out;
-}
-
+/* Animações */
 @keyframes slideIn {
   from {
     opacity: 0;
@@ -54,6 +69,102 @@ body {
   50% { opacity: 0.5; }
 }
 
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-bounce {
+  animation: bounce 1s ease-in-out infinite;
+}
+
+/* Mensagens */
+.message-enter {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Input focus */
+input:focus {
+  outline: none;
+}
+
+/* Botão ativo */
+button:active {
+  transform: scale(0.98);
+}
+
+/* Prevent pull-to-refresh on mobile */
+html, body {
+  overscroll-behavior-y: contain;
+}
+
+/* PWA standalone mode */
+@media all and (display-mode: standalone) {
+  body {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
+/* Mobile specific */
+@media (max-width: 768px) {
+  /* Ajustar tamanho de fonte */
+  html {
+    font-size: 14px;
+  }
+  
+  /* Evitar seleção acidental */
+  * {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  
+  input, textarea {
+    -webkit-user-select: text;
+    user-select: text;
+    font-size: 16px !important; /* Prevenir zoom no iOS */
+  }
+}
+
+/* Landscape mode */
+@media (orientation: landscape) and (max-height: 500px) {
+  .safe-area-top {
+    padding-top: 0;
+  }
+}
+
+/* Dark mode preference */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .bg-gray-800 {
+    background-color: #000;
+    border-color: #fff;
+  }
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
 }
