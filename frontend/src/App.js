@@ -860,7 +860,7 @@ function App() {
 
   // Configurações View
   const ConfiguracoesView = () => (
-    <div className="p-4 lg:p-8 max-w-2xl overflow-y-auto">
+    <div className="p-4 lg:p-8 max-w-2xl overflow-y-auto h-full">
       <h2 className="text-xl lg:text-2xl font-bold mb-6 text-white">Configurações</h2>
       
       {configMessage && (
@@ -875,75 +875,237 @@ function App() {
       )}
       
       <div className="space-y-4">
+        {/* Seleção de Provedor */}
+        <div className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-2xl p-4 lg:p-6 border border-purple-500/30">
+          <div className="flex items-center gap-2 mb-4">
+            <Cpu size={20} className="text-purple-400" />
+            <h3 className="font-bold text-white">Provedor de IA</h3>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => saveConfig({ provider: 'openrouter' })}
+              className={`p-4 rounded-xl border-2 transition-all ${
+                appConfig.provider === 'openrouter'
+                  ? 'border-purple-500 bg-purple-500/20'
+                  : 'border-gray-600 bg-gray-800 hover:border-gray-500'
+              }`}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <Zap size={20} className={appConfig.provider === 'openrouter' ? 'text-purple-400' : 'text-gray-400'} />
+                <span className="font-bold text-white">OpenRouter</span>
+              </div>
+              <p className="text-xs text-gray-400">Modelos gratuitos disponíveis</p>
+              <div className="mt-2 flex items-center gap-1">
+                <Star size={12} className="text-yellow-400" />
+                <span className="text-xs text-yellow-400">GRATUITO</span>
+              </div>
+            </button>
+            
+            <button
+              onClick={() => saveConfig({ provider: 'gemini' })}
+              className={`p-4 rounded-xl border-2 transition-all ${
+                appConfig.provider === 'gemini'
+                  ? 'border-blue-500 bg-blue-500/20'
+                  : 'border-gray-600 bg-gray-800 hover:border-gray-500'
+              }`}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <Bot size={20} className={appConfig.provider === 'gemini' ? 'text-blue-400' : 'text-gray-400'} />
+                <span className="font-bold text-white">Google Gemini</span>
+              </div>
+              <p className="text-xs text-gray-400">Modelos do Google</p>
+              <div className="mt-2 flex items-center gap-1">
+                <span className="text-xs text-gray-500">Cota limitada</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        {/* API Key OpenRouter */}
+        {appConfig.provider === 'openrouter' && (
+          <div className="bg-gray-800 rounded-2xl p-4 lg:p-6 border border-gray-700">
+            <div className="flex items-center gap-2 mb-4">
+              <Key size={20} className="text-purple-400" />
+              <h3 className="font-bold text-white">API Key OpenRouter</h3>
+              <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full">Gratuito</span>
+            </div>
+            
+            {appConfig.openrouter_api_key_set ? (
+              <div className="mb-4 p-3 bg-green-500/20 rounded-lg flex items-center gap-2">
+                <CheckCircle size={16} className="text-green-400" />
+                <span className="text-green-400 text-sm">
+                  Configurada: {appConfig.openrouter_api_key_preview}
+                </span>
+              </div>
+            ) : (
+              <div className="mb-4 p-3 bg-yellow-500/20 rounded-lg flex items-center gap-2">
+                <AlertCircle size={16} className="text-yellow-400" />
+                <span className="text-yellow-400 text-sm">Não configurada - Crie uma conta gratuita</span>
+              </div>
+            )}
+            
+            <div className="space-y-3">
+              <div className="relative">
+                <input
+                  type={showApiKey ? 'text' : 'password'}
+                  value={newOpenRouterKey}
+                  onChange={(e) => setNewOpenRouterKey(e.target.value)}
+                  placeholder="Cole sua API Key do OpenRouter..."
+                  className="w-full bg-gray-700 border border-gray-600 rounded-xl px-4 py-3 pr-12 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 text-sm"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowApiKey(!showApiKey)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                >
+                  {showApiKey ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              
+              <div className="flex gap-2">
+                <button
+                  onClick={saveOpenRouterKey}
+                  disabled={!newOpenRouterKey.trim() || savingConfig}
+                  className="flex-1 bg-purple-500 hover:bg-purple-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-4 py-2.5 rounded-xl font-medium text-sm flex items-center justify-center gap-2"
+                >
+                  {savingConfig ? <RefreshCw size={16} className="animate-spin" /> : <Save size={16} />}
+                  Salvar
+                </button>
+                
+                <button
+                  onClick={testAI}
+                  disabled={!appConfig.openrouter_api_key_set || testingAI}
+                  className="bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:cursor-not-allowed text-white px-4 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2"
+                >
+                  {testingAI ? <RefreshCw size={16} className="animate-spin" /> : <Bot size={16} />}
+                  Testar
+                </button>
+              </div>
+              
+              <a
+                href="https://openrouter.ai/keys"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-purple-400 hover:text-purple-300 text-xs flex items-center gap-1"
+              >
+                <ExternalLink size={12} />
+                Criar conta gratuita no OpenRouter
+              </a>
+            </div>
+          </div>
+        )}
+
         {/* API Key Gemini */}
+        {appConfig.provider === 'gemini' && (
+          <div className="bg-gray-800 rounded-2xl p-4 lg:p-6 border border-gray-700">
+            <div className="flex items-center gap-2 mb-4">
+              <Key size={20} className="text-blue-400" />
+              <h3 className="font-bold text-white">API Key do Gemini</h3>
+            </div>
+            
+            {appConfig.gemini_api_key_set ? (
+              <div className="mb-4 p-3 bg-green-500/20 rounded-lg flex items-center gap-2">
+                <CheckCircle size={16} className="text-green-400" />
+                <span className="text-green-400 text-sm">
+                  Configurada: {appConfig.gemini_api_key_preview}
+                </span>
+              </div>
+            ) : (
+              <div className="mb-4 p-3 bg-yellow-500/20 rounded-lg flex items-center gap-2">
+                <AlertCircle size={16} className="text-yellow-400" />
+                <span className="text-yellow-400 text-sm">Não configurada</span>
+              </div>
+            )}
+            
+            <div className="space-y-3">
+              <div className="relative">
+                <input
+                  type={showApiKey ? 'text' : 'password'}
+                  value={newGeminiKey}
+                  onChange={(e) => setNewGeminiKey(e.target.value)}
+                  placeholder="Cole sua API Key do Gemini..."
+                  className="w-full bg-gray-700 border border-gray-600 rounded-xl px-4 py-3 pr-12 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 text-sm"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowApiKey(!showApiKey)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                >
+                  {showApiKey ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              
+              <div className="flex gap-2">
+                <button
+                  onClick={saveGeminiKey}
+                  disabled={!newGeminiKey.trim() || savingConfig}
+                  className="flex-1 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-4 py-2.5 rounded-xl font-medium text-sm flex items-center justify-center gap-2"
+                >
+                  {savingConfig ? <RefreshCw size={16} className="animate-spin" /> : <Save size={16} />}
+                  Salvar
+                </button>
+                
+                <button
+                  onClick={testAI}
+                  disabled={!appConfig.gemini_api_key_set || testingAI}
+                  className="bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:cursor-not-allowed text-white px-4 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2"
+                >
+                  {testingAI ? <RefreshCw size={16} className="animate-spin" /> : <Bot size={16} />}
+                  Testar
+                </button>
+              </div>
+              
+              <a
+                href="https://aistudio.google.com/app/apikey"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-400 hover:text-blue-300 text-xs flex items-center gap-1"
+              >
+                <ExternalLink size={12} />
+                Obter API Key no Google AI Studio
+              </a>
+            </div>
+          </div>
+        )}
+
+        {/* Seleção de Modelo */}
         <div className="bg-gray-800 rounded-2xl p-4 lg:p-6 border border-gray-700">
           <div className="flex items-center gap-2 mb-4">
-            <Key size={20} className="text-red-400" />
-            <h3 className="font-bold text-white">API Key do Gemini</h3>
+            <Cpu size={20} className="text-cyan-400" />
+            <h3 className="font-bold text-white">Modelo de IA</h3>
           </div>
           
-          {appConfig.gemini_api_key_set ? (
-            <div className="mb-4 p-3 bg-green-500/20 rounded-lg flex items-center gap-2">
-              <CheckCircle size={16} className="text-green-400" />
-              <span className="text-green-400 text-sm">
-                Configurada: {appConfig.gemini_api_key_preview}
-              </span>
-            </div>
-          ) : (
-            <div className="mb-4 p-3 bg-yellow-500/20 rounded-lg flex items-center gap-2">
-              <AlertCircle size={16} className="text-yellow-400" />
-              <span className="text-yellow-400 text-sm">Não configurada</span>
-            </div>
+          <select
+            value={appConfig.selected_model}
+            onChange={(e) => saveConfig({ selected_model: e.target.value })}
+            className="w-full bg-gray-700 border border-gray-600 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-cyan-500 mb-3"
+          >
+            {appConfig.provider === 'openrouter' && (
+              <optgroup label="🆓 Modelos Gratuitos (OpenRouter)">
+                {Object.entries(availableModels.openrouter || {}).map(([id, info]) => (
+                  <option key={id} value={id}>
+                    {info.free ? '🆓 ' : ''}{info.name}
+                  </option>
+                ))}
+              </optgroup>
+            )}
+            {appConfig.provider === 'gemini' && (
+              <optgroup label="Google Gemini">
+                {Object.entries(availableModels.gemini || {}).map(([id, info]) => (
+                  <option key={id} value={id}>
+                    {info.name}
+                  </option>
+                ))}
+              </optgroup>
+            )}
+          </select>
+          
+          {availableModels[appConfig.provider]?.[appConfig.selected_model] && (
+            <p className="text-xs text-gray-400">
+              {availableModels[appConfig.provider][appConfig.selected_model].description}
+            </p>
           )}
-          
-          <div className="space-y-3">
-            <div className="relative">
-              <input
-                type={showApiKey ? 'text' : 'password'}
-                value={newApiKey}
-                onChange={(e) => setNewApiKey(e.target.value)}
-                placeholder="Cole sua API Key aqui..."
-                className="w-full bg-gray-700 border border-gray-600 rounded-xl px-4 py-3 pr-12 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 text-sm"
-              />
-              <button
-                type="button"
-                onClick={() => setShowApiKey(!showApiKey)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
-              >
-                {showApiKey ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-            
-            <div className="flex gap-2">
-              <button
-                onClick={saveApiKey}
-                disabled={!newApiKey.trim() || savingConfig}
-                className="flex-1 bg-red-500 hover:bg-red-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-4 py-2.5 rounded-xl font-medium text-sm flex items-center justify-center gap-2"
-              >
-                {savingConfig ? <RefreshCw size={16} className="animate-spin" /> : <Save size={16} />}
-                Salvar API Key
-              </button>
-              
-              <button
-                onClick={testGemini}
-                disabled={!appConfig.gemini_api_key_set || testingGemini}
-                className="bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:cursor-not-allowed text-white px-4 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2"
-              >
-                {testingGemini ? <RefreshCw size={16} className="animate-spin" /> : <Bot size={16} />}
-                Testar
-              </button>
-            </div>
-            
-            <a
-              href="https://aistudio.google.com/app/apikey"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-red-400 hover:text-red-300 text-xs flex items-center gap-1"
-            >
-              <ExternalLink size={12} />
-              Obter API Key no Google AI Studio
-            </a>
-          </div>
         </div>
         
         {/* Auto Reply */}
@@ -955,27 +1117,11 @@ function App() {
             </div>
             <button onClick={toggleAutoReply} disabled={savingConfig}>
               {appConfig.auto_reply 
-                ? <ToggleRight size={36} className="text-red-500" />
+                ? <ToggleRight size={36} className="text-green-500" />
                 : <ToggleLeft size={36} className="text-gray-500" />
               }
             </button>
           </div>
-        </div>
-        
-        {/* Modelo Gemini */}
-        <div className="bg-gray-800 rounded-2xl p-4 lg:p-6 border border-gray-700">
-          <h3 className="font-bold text-white text-sm lg:text-base mb-3">Modelo do Gemini</h3>
-          <select
-            value={appConfig.gemini_model}
-            onChange={(e) => saveConfig({ gemini_model: e.target.value })}
-            className="w-full bg-gray-700 border border-gray-600 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-red-500"
-          >
-            <option value="gemini-2.5-flash">Gemini 2.5 Flash (Recomendado)</option>
-            <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
-            <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-            <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-            <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-          </select>
         </div>
         
         {/* Notificações */}
