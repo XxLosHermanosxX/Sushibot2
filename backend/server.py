@@ -131,7 +131,7 @@ async def gerar_resposta_gemini(chat_id: str, mensagem: str) -> str:
     
     try:
         model = genai.GenerativeModel(
-            model_name="gemini-1.5-flash",
+            model_name="gemini-1.5-flash-latest",
             system_instruction=SYSTEM_PROMPT
         )
         
