@@ -1,8 +1,8 @@
 {
   "provider": "openrouter",
   "gemini_api_key": "AIzaSyCjfbiyv5kK0N57pRfiCmn9sfCUVx-2Qd0",
-  "openrouter_api_key": "",
-  "selected_model": "deepseek/deepseek-r1:free",
+  "openrouter_api_key": "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",
+  "selected_model": "meta-llama/llama-3.3-70b-instruct:free",
   "auto_reply": true,
   "human_takeover_minutes": 60,
   "site_url": "https://sushiakicb.shop",
