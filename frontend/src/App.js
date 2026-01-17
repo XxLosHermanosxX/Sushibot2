@@ -829,7 +829,7 @@ function App() {
             <div 
               ref={messagesContainerRef}
               onScroll={handleMessagesScroll}
-              className="flex-1 overflow-y-auto p-4 space-y-3 scroll-smooth"
+              className="flex-1 overflow-y-auto p-4 space-y-3 overscroll-contain"
             >
               {selectedChat.mensagens?.map((msg, idx) => (
                 <div key={msg.id || idx} className={`flex ${msg.from === 'cliente' ? 'justify-start' : 'justify-end'}`}>
