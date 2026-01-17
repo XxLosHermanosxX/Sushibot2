@@ -632,10 +632,16 @@ async def receive_message(request: MessageRequest):
     if not config.get("auto_reply", True):
         return {"response": None, "reason": "auto_reply_disabled"}
     
-    # Gerar resposta
-    if not conversa["mensagem_inicial_enviada"]:
+    # PRIMEIRO: Verificar se cliente pediu atendente humano
+    if detecta_pedido_humano(mensagem):
+        conversa["modo_humanizado"] = True
+        conversa["mensagem_inicial_enviada"] = True  # Pula mensagem inicial
+        resposta = await gerar_resposta(chat_id, mensagem)
+    # SEGUNDO: Mensagem inicial para novos clientes
+    elif not conversa["mensagem_inicial_enviada"]:
         resposta = get_mensagem_inicial()
         conversa["mensagem_inicial_enviada"] = True
+    # TERCEIRO: Resposta normal
     else:
         resposta = await gerar_resposta(chat_id, mensagem)
     
