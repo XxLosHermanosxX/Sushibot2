@@ -394,9 +394,35 @@ function App() {
     return () => clearInterval(interval);
   }, [fetchStatus, fetchConfig, fetchModels, fetchConversas, fetchWhatsAppBotStatus]);
 
+  // Auto-scroll inteligente - só rola se tiver nova mensagem E usuário não estiver vendo histórico
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [selectedChat?.mensagens]);
+    const currentCount = selectedChat?.mensagens?.length || 0;
+    const previousCount = lastMessageCountRef.current;
+    
+    // Só faz scroll se tiver nova mensagem e usuário não tiver scrollado para cima
+    if (currentCount > previousCount && !userScrolledUpRef.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    lastMessageCountRef.current = currentCount;
+  }, [selectedChat?.mensagens?.length]);
+  
+  // Resetar flag quando mudar de conversa
+  useEffect(() => {
+    userScrolledUpRef.current = false;
+    lastMessageCountRef.current = 0;
+    // Scroll para o final ao abrir conversa
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
+    }, 100);
+  }, [selectedChat?.chat_id]);
+
+  // Handler para detectar scroll do usuário
+  const handleMessagesScroll = useCallback((e) => {
+    const container = e.target;
+    const isAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 50;
+    userScrolledUpRef.current = !isAtBottom;
+  }, []);
 
   // Salvar configuração
   const saveConfig = useCallback(async (configData) => {
