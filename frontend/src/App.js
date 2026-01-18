@@ -496,8 +496,14 @@ function App() {
   }, []);
 
   // Enviar mensagem
+  const [sending, setSending] = useState(false);
+  
   const sendMessage = useCallback(async () => {
-    if (!newMessage.trim() || !selectedChat) return;
+    if (!newMessage.trim() || !selectedChat || sending) return;
+    
+    setSending(true);
+    const messageToSend = newMessage.trim();
+    setNewMessage(''); // Limpa imediatamente para evitar duplo envio
     
     try {
       await fetch(`${BACKEND_URL}/api/send-message`, {
@@ -505,15 +511,18 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           chat_id: selectedChat.chat_id,
-          message: newMessage
+          message: messageToSend
         })
       });
-      setNewMessage('');
-      fetchConversas();
+      // Aguarda um pouco antes de buscar para dar tempo do backend processar
+      setTimeout(() => fetchConversas(), 500);
     } catch (err) {
       console.error('Erro:', err);
+      setNewMessage(messageToSend); // Restaura mensagem em caso de erro
+    } finally {
+      setSending(false);
     }
-  }, [newMessage, selectedChat, fetchConversas]);
+  }, [newMessage, selectedChat, fetchConversas, sending]);
 
   // Takeover
   const toggleHumanTakeover = useCallback(async (chatId, isHuman) => {
