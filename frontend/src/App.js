@@ -791,6 +791,7 @@ function App() {
               </div>
             ))
           )}
+        </div>
       </div>
       
       {/* Área do chat */}
