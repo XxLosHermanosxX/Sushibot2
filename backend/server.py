@@ -187,10 +187,6 @@ DESTAQUES / EXCLUSIVOS DO APP:
 • Temaki Duplo (2 Unidades) - R$ 24,90 (1 Temaki Salmão Grelhado + 1 Temaki Salmão Skin)
 • Hot Roll Lovers (16 Peças) - R$ 19,90 (16 peças de Hot Roll crocante)
 
-CUPONS VÁLIDOS:
-• BEMVINDO20 - 20% OFF na primeira compra
-• BEMVINDO49 - Combo Família 80 Peças por R$ 49,90
-
 📍 INFORMAÇÕES DO NEGÓCIO:
 - Nome: {config.get('business_name', 'Sushi Aki')}
 - Site: {config.get('site_url', 'https://sushiakicb.shop')}
