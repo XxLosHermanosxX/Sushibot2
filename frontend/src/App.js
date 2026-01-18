@@ -389,7 +389,7 @@ function App() {
       fetchStatus();
       fetchConversas();
       fetchWhatsAppBotStatus();
-    }, 3000); // Aumentado para 3s para reduzir carga
+    }, 5000); // Aumentado para 5s para reduzir carga
     
     return () => clearInterval(interval);
   }, [fetchStatus, fetchConfig, fetchModels, fetchConversas, fetchWhatsAppBotStatus]);
