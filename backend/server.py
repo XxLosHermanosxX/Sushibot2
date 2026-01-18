@@ -252,10 +252,6 @@ DESTAQUES / EXCLUSIVOS DO APP:
 • Temaki Duplo (2 Unidades) - R$ 24,90
 • Hot Roll Lovers (16 Peças) - R$ 19,90
 
-CUPONS VÁLIDOS:
-• BEMVINDO20 - 20% OFF na primeira compra
-• BEMVINDO49 - Combo Família 80 Peças por R$ 49,90
-
 📍 INFORMAÇÕES DO NEGÓCIO:
 - Site para pedidos: {config.get('site_url', 'https://sushiakicb.shop')}
 - Entrega: Toda Curitiba e região
