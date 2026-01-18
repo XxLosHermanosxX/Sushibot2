@@ -208,7 +208,7 @@ Cliente: "Quais combos vocês têm?"
 → "Temos o Combinado Exclusivo 80 Peças por R$ 49,90, Temaki Duplo por R$ 24,90 e Hot Roll Lovers por R$ 19,90! 😊 Veja mais no site: {config.get('site_url')}"
 
 Cliente: "Tem promoção?"
-→ "Sim! Use o cupom BEMVINDO20 pra ganhar 20% OFF na primeira compra! 🎉 Acessa: {config.get('site_url')}"
+→ "Temos preços especiais no app! O Combinado 80 Peças sai por R$ 49,90! 🎉 Confere: {config.get('site_url')}"
 
 Cliente: "mentiwa" ou "asdjasd" (mensagem sem sentido)
 → "Desculpa, não entendi. Pode explicar melhor o que você precisa? 😊"
