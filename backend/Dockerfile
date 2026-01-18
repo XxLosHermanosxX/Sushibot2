@@ -9,8 +9,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application
 COPY . .
 
-# Expose port
-EXPOSE 8001
+# Railway uses dynamic PORT
+ENV PORT=8001
+EXPOSE $PORT
 
-# Run the application
-CMD ["python", "-m", "uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8001"]
+# Run the application (Railway sets PORT automatically)
+CMD python -m uvicorn server:app --host 0.0.0.0 --port $PORT
