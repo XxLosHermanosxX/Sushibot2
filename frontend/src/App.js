@@ -869,13 +869,27 @@ function App() {
                   type="text"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      sendMessage();
+                    }
+                  }}
                   placeholder="Digite uma mensagem..."
-                  className="flex-1 bg-gray-700 border border-gray-600 rounded-xl px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 text-sm"
+                  disabled={sending}
+                  className="flex-1 bg-gray-700 border border-gray-600 rounded-xl px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 text-sm disabled:opacity-50"
                   data-testid="chat-message-input"
                 />
-                <button onClick={sendMessage} className="p-2.5 bg-red-500 hover:bg-red-600 rounded-xl">
-                  <Send size={18} className="text-white" />
+                <button 
+                  onClick={sendMessage} 
+                  disabled={sending || !newMessage.trim()}
+                  className="p-2.5 bg-red-500 hover:bg-red-600 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {sending ? (
+                    <RefreshCw size={18} className="text-white animate-spin" />
+                  ) : (
+                    <Send size={18} className="text-white" />
+                  )}
                 </button>
               </div>
             </div>
