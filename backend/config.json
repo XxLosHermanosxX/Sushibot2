@@ -5,7 +5,7 @@
   "selected_model": "meta-llama/llama-3.3-70b-instruct:free",
   "auto_reply": true,
   "human_takeover_minutes": 60,
-  "site_url": "https://sushiakicb.shop",
+  "site_url": "https://www.sushiakicb.shop",
   "business_name": "Sushi Aki",
   "gemini_model": "gemini-2.5-flash"
 }
