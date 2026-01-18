@@ -791,10 +791,10 @@ function App() {
               </div>
             ))
           )}
-        </div>
       </div>
       
-      <div className={`flex-1 flex flex-col bg-gray-900 ${selectedChat ? 'flex' : 'hidden lg:flex'}`}>
+      {/* Área do chat */}
+      <div className={`flex-1 flex flex-col bg-gray-900 h-full overflow-hidden ${selectedChat ? 'flex' : 'hidden lg:flex'}`}>
         {selectedChat ? (
           <>
             <div className="p-3 lg:p-4 border-b border-gray-700 flex items-center justify-between bg-gray-800">
