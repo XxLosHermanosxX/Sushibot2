@@ -34,3 +34,7 @@ coverage/
 # Temp
 temp_extract/
 *.tmp
+-e 
+# Environment files
+*.env
+*.env.*
