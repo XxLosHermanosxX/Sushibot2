@@ -288,24 +288,24 @@ Agradecimento:
 - Mantenha sempre o nome "Carol\""""
 
 def get_mensagem_inicial():
-    return f"""Oi! 😊 Bem-vindo ao {config.get('business_name', 'Sushi Aki')} 🍣
+    return f"""Oi! 😊 Bem-vindo ao {config.get('business_name', 'Sushi Aki')}!
 
-Nosso cardápio tá imperdível hoje!
-👉 Confere aqui: {config.get('site_url', 'https://sushiakicb.shop')}
-
-Aceita Pix e cartão 💳 | Entrega em toda Curitiba
-
-Posso te ajudar a escolher? 😉"""
-
-def get_resposta_desconfianca():
-    return f"""Entendo sua preocupação 😊
-
-Olha, a gente tem 4 lojas físicas em Curitiba. Pode até passar aqui pra conhecer! 
-
-Mas o mais prático é pedir pelo site oficial:
+Quer ver nosso cardápio? Acessa aqui:
 👉 {config.get('site_url', 'https://sushiakicb.shop')}
 
-Pagamento seguro por Pix ou cartão, com confirmação na hora 🍣"""
+Pagamos Pix e cartão | Entrega em Curitiba
+
+Posso te ajudar com algo? 🍣"""
+
+def get_resposta_desconfianca():
+    return f"""Entendo sua preocupação! 😊
+
+Somos o {config.get('business_name', 'Sushi Aki')}, com 4 lojas físicas em Curitiba. Pode conferir!
+
+Nosso site oficial para pedidos:
+👉 {config.get('site_url', 'https://sushiakicb.shop')}
+
+Pagamento seguro por Pix ou cartão 🍣"""
 
 # Palavras que indicam desconfiança
 DESCONFIANCA = ["golpe", "confiável", "fake", "pix antes", "site seguro", "fraude", "verdade", "mentira", "enganar", "roubo", "falso", "scam"]
