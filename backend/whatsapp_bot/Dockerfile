@@ -11,8 +11,9 @@ RUN npm install
 # Copy application
 COPY . .
 
-# Expose port
-EXPOSE 3001
+# Railway uses dynamic PORT
+ENV PORT=3001
+EXPOSE $PORT
 
 # Run the application
-CMD ["node", "bot.js"]
+CMD node bot.js
