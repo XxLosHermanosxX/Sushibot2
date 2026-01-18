@@ -745,16 +745,17 @@ function App() {
 
   // ==================== CONVERSAS VIEW ====================
   const renderConversas = () => (
-    <div className="flex h-full">
-      <div className={`w-full lg:w-80 bg-gray-900 border-r border-gray-700 flex flex-col ${
+    <div className="flex h-full overflow-hidden">
+      {/* Lista de conversas */}
+      <div className={`w-full lg:w-80 bg-gray-900 border-r border-gray-700 flex flex-col h-full ${
         selectedChat ? 'hidden lg:flex' : 'flex'
       }`}>
-        <div className="p-4 border-b border-gray-700">
+        <div className="p-4 border-b border-gray-700 flex-shrink-0">
           <h3 className="font-bold text-white">Conversas</h3>
           <p className="text-sm text-gray-400">{conversas.length} ativas</p>
         </div>
         
-        <div className="flex-1 overflow-y-auto overscroll-contain">
+        <div className="flex-1 overflow-y-auto overscroll-contain min-h-0">
           {conversas.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
               <MessageCircle size={48} className="mx-auto mb-4 opacity-50" />
