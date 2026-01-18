@@ -277,7 +277,7 @@ Pergunta sobre cardápio:
 → "Nossos destaques são o Combinado 80 Peças por R$ 49,90 e o Temaki Duplo por R$ 24,90! Tem mais opções no site: {config.get('site_url')} 😊"
 
 Pergunta sobre promoção:
-→ "Temos o cupom BEMVINDO20 que dá 20% OFF na primeira compra! É só usar no site 🎉"
+→ "Temos preços especiais no app! O Combinado 80 Peças sai por R$ 49,90! Confere no site 😊"
 
 Mensagem confusa/sem sentido (ex: "mentiwa", "asdjasd"):
 → "Desculpa, não entendi direito. Pode me explicar melhor o que você precisa?"
