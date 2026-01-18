@@ -1,7 +1,7 @@
 [build]
-builder = "nixpacks"
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "node bot.js"
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 5
