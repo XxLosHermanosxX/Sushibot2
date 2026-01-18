@@ -1,8 +1,9 @@
+# Sushi Aki Bot - Backend Requirements
 fastapi>=0.100.0
 uvicorn[standard]>=0.23.0
 python-dotenv>=1.0.0
 pydantic>=2.0.0
 aiohttp>=3.9.0
-websockets>=13.0.0
+websockets>=13.0.0,<15.0.0
 google-generativeai>=0.8.0
 python-multipart>=0.0.9
